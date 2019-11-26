@@ -1,0 +1,1614 @@
+=encoding utf8
+
+
+=head2 Miscellaneous
+
+
+=head3 version
+
+Gets the version of the API exposed by this plugin. Currently versions C<1> through C<6> are defined.
+
+This should be the first call you make to make sure that your application and AnkiConnect are able to communicate
+properly with each other. New versions of AnkiConnect are backwards compatible; as long as you are using actions
+which are available in the reported AnkiConnect version or earlier, everything should work fine.
+
+I<Sample request>:
+ 
+ {
+     "action": "version",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": 6,
+     "error": null
+ }
+
+
+
+=head3 upgrade
+
+Displays a confirmation dialog box in Anki asking the user if they wish to upgrade AnkiConnect to the latest version
+from the project's L<master branch|https://raw.githubusercontent.com/FooSoft/anki-connect/master/AnkiConnect.py> on
+GitHub. Returns a boolean value indicating if the plugin was upgraded or not.
+
+I<Sample request>:
+ 
+ {
+     "action": "upgrade",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 sync
+
+Synchronizes the local anki collections with ankiweb.
+
+I<Sample request>:
+ 
+ {
+     "action": "sync",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 loadProfile
+
+Selects the profile specified in request.
+
+I<Sample request>:
+ 
+ {
+     "action": "loadProfile",
+     "params": {
+         "name": "user1"
+     },
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 multi
+
+Performs multiple actions in one request, returning an array with the response of each action (in the given order).
+
+I<Sample request>:
+ 
+ {
+     "action": "multi",
+     "version": 6,
+     "params": {
+         "actions": [
+             {"action": "deckNames"},
+             {
+                 "action": "browse",
+                 "params": {"query": "deck:current"}
+             }
+         ]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [
+         {"result": "Default", "error": null},
+         {"result": [1494723142483, 1494703460437, 1494703479525], "error": null}
+     ],
+     "error": null
+ }
+
+
+
+=head2 Decks
+
+
+=head3 deckNames
+
+Gets the complete list of deck names for the current user.
+
+I<Sample request>:
+ 
+ {
+     "action": "deckNames",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": ["Default"],
+     "error": null
+ }
+
+
+
+=head3 deckNamesAndIds
+
+Gets the complete list of deck names and their respective IDs for the current user.
+
+I<Sample request>:
+ 
+ {
+     "action": "deckNamesAndIds",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": {"Default": 1},
+     "error": null
+ }
+
+
+
+=head3 getDecks
+
+Accepts an array of card IDs and returns an object with each deck name as a key, and its value an array of the given
+cards which belong to it.
+
+I<Sample request>:
+ 
+ {
+     "action": "getDecks",
+     "version": 6,
+     "params": {
+         "cards": [1502298036657, 1502298033753, 1502032366472]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": {
+         "Default": [1502032366472],
+         "Japanese::JLPT N3": [1502298036657, 1502298033753]
+     },
+     "error": null
+ }
+
+
+
+=head3 createDeck
+
+Create a new empty deck. Will not overwrite a deck that exists with the same name.
+
+I<Sample request>:
+ 
+ {
+     "action": "createDeck",
+     "version": 6,
+     "params": {
+         "deck": "Japanese::Tokyo"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": 1519323742721,
+     "error": null
+ }
+
+
+
+=head3 changeDeck
+
+Moves cards with the given IDs to a different deck, creating the deck if it doesn't exist yet.
+
+I<Sample request>:
+ 
+ {
+     "action": "changeDeck",
+     "version": 6,
+     "params": {
+         "cards": [1502098034045, 1502098034048, 1502298033753],
+         "deck": "Japanese::JLPT N3"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 deleteDecks
+
+Deletes decks with the given names. If C<cardsToo> is C<true> (defaults to C<false> if unspecified), the cards within
+the deleted decks will also be deleted; otherwise they will be moved to the default deck.
+
+I<Sample request>:
+ 
+ {
+     "action": "deleteDecks",
+     "version": 6,
+     "params": {
+         "decks": ["Japanese::JLPT N5", "Easy Spanish"],
+         "cardsToo": true
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 getDeckConfig
+
+Gets the configuration group object for the given deck.
+
+I<Sample request>:
+ 
+ {
+     "action": "getDeckConfig",
+     "version": 6,
+     "params": {
+         "deck": "Default"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": {
+         "lapse": {
+             "leechFails": 8,
+             "delays": [10],
+             "minInt": 1,
+             "leechAction": 0,
+             "mult": 0
+         },
+         "dyn": false,
+         "autoplay": true,
+         "mod": 1502970872,
+         "id": 1,
+         "maxTaken": 60,
+         "new": {
+             "bury": true,
+             "order": 1,
+             "initialFactor": 2500,
+             "perDay": 20,
+             "delays": [1, 10],
+             "separate": true,
+             "ints": [1, 4, 7]
+         },
+         "name": "Default",
+         "rev": {
+             "bury": true,
+             "ivlFct": 1,
+             "ease4": 1.3,
+             "maxIvl": 36500,
+             "perDay": 100,
+             "minSpace": 1,
+             "fuzz": 0.05
+         },
+         "timer": 0,
+         "replayq": true,
+         "usn": -1
+     },
+     "error": null
+ }
+
+
+
+=head3 saveDeckConfig
+
+Saves the given configuration group, returning C<true> on success or C<false> if the ID of the configuration group is
+invalid (such as when it does not exist).
+
+I<Sample request>:
+ 
+ {
+     "action": "saveDeckConfig",
+     "version": 6,
+     "params": {
+         "config": {
+             "lapse": {
+                 "leechFails": 8,
+                 "delays": [10],
+                 "minInt": 1,
+                 "leechAction": 0,
+                 "mult": 0
+             },
+             "dyn": false,
+             "autoplay": true,
+             "mod": 1502970872,
+             "id": 1,
+             "maxTaken": 60,
+             "new": {
+                 "bury": true,
+                 "order": 1,
+                 "initialFactor": 2500,
+                 "perDay": 20,
+                 "delays": [1, 10],
+                 "separate": true,
+                 "ints": [1, 4, 7]
+             },
+             "name": "Default",
+             "rev": {
+                 "bury": true,
+                 "ivlFct": 1,
+                 "ease4": 1.3,
+                 "maxIvl": 36500,
+                 "perDay": 100,
+                 "minSpace": 1,
+                 "fuzz": 0.05
+             },
+             "timer": 0,
+             "replayq": true,
+             "usn": -1
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 setDeckConfigId
+
+Changes the configuration group for the given decks to the one with the given ID. Returns C<true> on success or
+C<false> if the given configuration group or any of the given decks do not exist.
+
+I<Sample request>:
+ 
+ {
+     "action": "setDeckConfigId",
+     "version": 6,
+     "params": {
+         "decks": ["Default"],
+         "configId": 1
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 cloneDeckConfigId
+
+Creates a new configuration group with the given name, cloning from the group with the given ID, or from the default
+group if this is unspecified. Returns the ID of the new configuration group, or C<false> if the specified group to
+clone from does not exist.
+
+I<Sample request>:
+ 
+ {
+     "action": "cloneDeckConfigId",
+     "version": 6,
+     "params": {
+         "name": "Copy of Default",
+         "cloneFrom": 1
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": 1502972374573,
+     "error": null
+ }
+
+
+
+=head3 removeDeckConfigId
+
+Removes the configuration group with the given ID, returning C<true> if successful, or C<false> if attempting to
+remove either the default configuration group (ID = 1) or a configuration group that does not exist.
+
+I<Sample request>:
+ 
+ {
+     "action": "removeDeckConfigId",
+     "version": 6,
+     "params": {
+         "configId": 1502972374573
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head2 Models
+
+
+=head3 modelNames
+
+Gets the complete list of model names for the current user.
+
+I<Sample request>:
+ 
+ {
+     "action": "modelNames",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": ["Basic", "Basic (and reversed card)"],
+     "error": null
+ }
+
+
+
+=head3 modelNamesAndIds
+
+Gets the complete list of model names and their corresponding IDs for the current user.
+
+I<Sample request>:
+ 
+ {
+     "action": "modelNamesAndIds",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": {
+         "Basic": 1483883011648,
+         "Basic (and reversed card)": 1483883011644,
+         "Basic (optional reversed card)": 1483883011631,
+         "Cloze": 1483883011630
+     },
+     "error": null
+ }
+
+
+
+=head3 modelFieldNames
+
+Gets the complete list of field names for the provided model name.
+
+I<Sample request>:
+ 
+ {
+     "action": "modelFieldNames",
+     "version": 6,
+     "params": {
+         "modelName": "Basic"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": ["Front", "Back"],
+     "error": null
+ }
+
+
+
+=head3 modelFieldsOnTemplates
+
+Returns an object indicating the fields on the question and answer side of each card template for the given model
+name. The question side is given first in each array.
+
+I<Sample request>:
+ 
+ {
+     "action": "modelFieldsOnTemplates",
+     "version": 6,
+     "params": {
+         "modelName": "Basic (and reversed card)"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": {
+         "Card 1": [["Front"], ["Back"]],
+         "Card 2": [["Back"], ["Front"]]
+     },
+     "error": null
+ }
+
+
+
+=head3 createModel
+
+Creates a new model to be used in Anki. User must provide the C<modelName>, C<inOrderFields> and C<cardTemplates> to be
+used in the model.
+
+I<Sample request>
+ 
+ {
+     "action": "createModel",
+     "version": 6,
+     "params": {
+         "modelName": "newModelName",
+         "inOrderFields": ["Field1", "Field2", "Field3"],
+         "css": "Optional CSS with default to builtin css",
+         "cardTemplates": [
+             {
+                 "Front": "Front html {{Field1}}",
+                 "Back": "Back html  {{Field2}}"
+             }
+         ]
+     }
+ }
+
+
+I<Sample result>
+ 
+ {
+     "result":{
+         "sortf":0,
+         "did":1,
+         "latexPre":"\\documentclass[12pt]{article}\n\\special{papersize=3in,5in}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amssymb,amsmath}\n\\pagestyle{empty}\n\\setlength{\\parindent}{0in}\n\\begin{document}\n",
+         "latexPost":"\\end{document}",
+         "mod":1551462107,
+         "usn":-1,
+         "vers":[
+         ],
+         "type":0,
+         "css":".card {\n font-family: arial;\n font-size: 20px;\n text-align: center;\n color: black;\n background-color: white;\n}\n",
+         "name":"TestApiModel",
+         "flds":[
+             {
+                 "name":"Field1",
+                 "ord":0,
+                 "sticky":false,
+                 "rtl":false,
+                 "font":"Arial",
+                 "size":20,
+                 "media":[
+                 ]
+             },
+             {
+                 "name":"Field2",
+                 "ord":1,
+                 "sticky":false,
+                 "rtl":false,
+                 "font":"Arial",
+                 "size":20,
+                 "media":[
+                 ]
+             }
+         ],
+         "tmpls":[
+             {
+                 "name":"Card 1",
+                 "ord":0,
+                 "qfmt":"",
+                 "afmt":"This is the back of the card {{Field2}}",
+                 "did":null,
+                 "bqfmt":"",
+                 "bafmt":""
+             }
+         ],
+         "tags":[
+         ],
+         "id":"1551462107104",
+         "req":[
+             [
+                 0,
+                 "none",
+                 [
+                 ]
+             ]
+         ]
+     },
+     "error":null
+ }
+
+
+
+=head2 Notes
+
+
+=head3 addNote
+
+Creates a note using the given deck and model, with the provided field values and tags. Returns the identifier of
+the created note created on success, and C<null> on failure.
+
+AnkiConnect can download audio files and embed them in newly created notes. The corresponding C<audio> note member is
+optional and can be omitted. If you choose to include it, the C<url> and C<filename> fields must be also defined. The
+C<skipHash> field can be optionally provided to skip the inclusion of downloaded files with an MD5 hash that matches
+the provided value. This is useful for avoiding the saving of error pages and stub files. The C<fields> member is a
+list of fields that should play audio when the card is displayed in Anki. The C<allowDuplicate> member inside
+C<options> group can be set to true to enable adding duplicate cards. Normally duplicate cards can not be added and
+trigger exception.
+
+I<Sample request>:
+ 
+ {
+     "action": "addNote",
+     "version": 6,
+     "params": {
+         "note": {
+             "deckName": "Default",
+             "modelName": "Basic",
+             "fields": {
+                 "Front": "front content",
+                 "Back": "back content"
+             },
+             "options": {
+                 "allowDuplicate": false
+             },
+             "tags": [
+                 "yomichan"
+             ],
+             "audio": {
+                 "url": "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kanji=猫&kana=ねこ",
+                 "filename": "yomichan_ねこ_猫.mp3",
+                 "skipHash": "7e2c2f954ef6051373ba916f000168dc",
+                 "fields": [
+                     "Front"
+                 ]
+             }
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": 1496198395707,
+     "error": null
+ }
+
+
+
+=head3 addNotes
+
+Creates multiple notes using the given deck and model, with the provided field values and tags. Returns an array of
+identifiers of the created notes (notes that could not be created will have a C<null> identifier). Please see the
+documentation for C<addNote> for an explanation of objects in the C<notes> array.
+
+I<Sample request>:
+ 
+ {
+     "action": "addNotes",
+     "version": 6,
+     "params": {
+         "notes": [
+             {
+                 "deckName": "Default",
+                 "modelName": "Basic",
+                 "fields": {
+                     "Front": "front content",
+                     "Back": "back content"
+                 },
+                 "tags": [
+                     "yomichan"
+                 ],
+                 "audio": {
+                     "url": "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kanji=猫&kana=ねこ",
+                     "filename": "yomichan_ねこ_猫.mp3",
+                     "skipHash": "7e2c2f954ef6051373ba916f000168dc",
+                     "fields": [
+                         "Front"
+                     ]
+                 }
+             }
+         ]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [1496198395707, null],
+     "error": null
+ }
+
+
+
+=head3 canAddNotes
+
+Accepts an array of objects which define parameters for candidate notes (see C<addNote>) and returns an array of
+booleans indicating whether or not the parameters at the corresponding index could be used to create a new note.
+
+I<Sample request>:
+ 
+ {
+     "action": "canAddNotes",
+     "version": 6,
+     "params": {
+         "notes": [
+             {
+                 "deckName": "Default",
+                 "modelName": "Basic",
+                 "fields": {
+                     "Front": "front content",
+                     "Back": "back content"
+                 },
+                 "tags": [
+                     "yomichan"
+                 ]
+             }
+         ]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [true],
+     "error": null
+ }
+
+
+
+=head3 updateNoteFields
+
+Modify the fields of an exist note.
+
+I<Sample request>:
+ 
+ {
+     "action": "updateNoteFields",
+     "version": 6,
+     "params": {
+         "note": {
+             "id": 1514547547030,
+             "fields": {
+                 "Front": "new front content",
+                 "Back": "new back content"
+             }
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 addTags
+
+Adds tags to notes by note ID.
+
+I<Sample request>:
+ 
+ {
+     "action": "addTags",
+     "version": 6,
+     "params": {
+         "notes": [1483959289817, 1483959291695],
+         "tags": "european-languages"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 removeTags
+
+Remove tags from notes by note ID.
+
+I<Sample request>:
+ 
+ {
+     "action": "removeTags",
+     "version": 6,
+     "params": {
+         "notes": [1483959289817, 1483959291695],
+         "tags": "european-languages"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 getTags
+
+Gets the complete list of tags for the current user.
+
+I<Sample request>:
+ 
+ {
+     "action": "getTags",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": ["european-languages", "idioms"],
+     "error": null
+ }
+
+
+
+=head3 findNotes
+
+Returns an array of note IDs for a given query. Same query syntax as C<guiBrowse>.
+
+I<Sample request>:
+ 
+ {
+     "action": "findNotes",
+     "version": 6,
+     "params": {
+         "query": "deck:current"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [1483959289817, 1483959291695],
+     "error": null
+ }
+
+
+
+=head3 notesInfo
+
+Returns a list of objects containing for each note ID the note fields, tags, note type and the cards belonging to
+the note.
+
+I<Sample request>:
+ 
+ {
+     "action": "notesInfo",
+     "version": 6,
+     "params": {
+         "notes": [1502298033753]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [
+         {
+             "noteId":1502298033753,
+             "modelName": "Basic",
+             "tags":["tag","another_tag"],
+             "fields": {
+                 "Front": {"value": "front content", "order": 0},
+                 "Back": {"value": "back content", "order": 1}
+             }
+         }
+     ],
+     "error": null
+ }
+
+
+
+=head3 deleteNotes
+
+Deletes notes with the given ids. If a note has several cards associated with it, all associated cards will be deleted.
+
+I<Sample request>:
+ 
+ {
+     "action": "deleteNotes",
+     "version": 6,
+     "params": {
+         "notes": [1502298033753]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head2 Cards
+
+
+=head3 suspend
+
+Suspend cards by card ID; returns C<true> if successful (at least one card wasn't already suspended) or C<false>
+otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "suspend",
+     "version": 6,
+     "params": {
+         "cards": [1483959291685, 1483959293217]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 unsuspend
+
+Unsuspend cards by card ID; returns C<true> if successful (at least one card was previously suspended) or C<false>
+otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "unsuspend",
+     "version": 6,
+     "params": {
+         "cards": [1483959291685, 1483959293217]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 areSuspended
+
+Returns an array indicating whether each of the given cards is suspended (in the same order).
+
+I<Sample request>:
+ 
+ {
+     "action": "areSuspended",
+     "version": 6,
+     "params": {
+         "cards": [1483959291685, 1483959293217]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [false, true],
+     "error": null
+ }
+
+
+
+=head3 areDue
+
+Returns an array indicating whether each of the given cards is due (in the same order). I<Note>: cards in the
+learning queue with a large interval (over 20 minutes) are treated as not due until the time of their interval has
+passed, to match the way Anki treats them when reviewing.
+
+I<Sample request>:
+ 
+ {
+     "action": "areDue",
+     "version": 6,
+     "params": {
+         "cards": [1483959291685, 1483959293217]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [false, true],
+     "error": null
+ }
+
+
+
+=head3 getIntervals
+
+Returns an array of the most recent intervals for each given card ID, or a 2-dimensional array of all the intervals
+for each given card ID when C<complete> is C<true>. Negative intervals are in seconds and positive intervals in days.
+
+I<Sample request 1>:
+ 
+ {
+     "action": "getIntervals",
+     "version": 6,
+     "params": {
+         "cards": [1502298033753, 1502298036657]
+     }
+ }
+
+
+I<Sample result 1>:
+ 
+ {
+     "result": [-14400, 3],
+     "error": null
+ }
+
+
+I<Sample request 2>:
+ 
+ {
+     "action": "getIntervals",
+     "version": 6,
+     "params": {
+         "cards": [1502298033753, 1502298036657],
+         "complete": true
+     }
+ }
+
+
+I<Sample result 2>:
+ 
+ {
+     "result": [
+         [-120, -180, -240, -300, -360, -14400],
+         [-120, -180, -240, -300, -360, -14400, 1, 3]
+     ],
+     "error": null
+ }
+
+
+
+=head3 findCards
+
+Returns an array of card IDs for a given query. Functionally identical to C<guiBrowse> but doesn't use the GUI for
+better performance.
+
+I<Sample request>:
+ 
+ {
+     "action": "findCards",
+     "version": 6,
+     "params": {
+         "query": "deck:current"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [1494723142483, 1494703460437, 1494703479525],
+     "error": null
+ }
+
+
+
+=head3 cardsToNotes
+
+Returns an unordered array of note IDs for the given card IDs. For cards with the same note, the ID is only given
+once in the array.
+
+I<Sample request>:
+ 
+ {
+     "action": "cardsToNotes",
+     "version": 6,
+     "params": {
+         "cards": [1502098034045, 1502098034048, 1502298033753]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [1502098029797, 1502298025183],
+     "error": null
+ }
+
+
+
+=head3 cardsInfo
+
+Returns a list of objects containing for each card ID the card fields, front and back sides including CSS, note
+type, the note that the card belongs to, and deck name, as well as ease and interval.
+
+I<Sample request>:
+ 
+ {
+     "action": "cardsInfo",
+     "version": 6,
+     "params": {
+         "cards": [1498938915662, 1502098034048]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [
+         {
+             "answer": "back content",
+             "question": "front content",
+             "deckName": "Default",
+             "modelName": "Basic",
+             "fieldOrder": 1,
+             "fields": {
+                 "Front": {"value": "front content", "order": 0},
+                 "Back": {"value": "back content", "order": 1}
+             },
+             "css":"p {font-family:Arial;}",
+             "cardId": 1498938915662,
+             "interval": 16,
+             "note":1502298033753
+         },
+         {
+             "answer": "back content",
+             "question": "front content",
+             "deckName": "Default",
+             "modelName": "Basic",
+             "fieldOrder": 0,
+             "fields": {
+                 "Front": {"value": "front content", "order": 0},
+                 "Back": {"value": "back content", "order": 1}
+             },
+             "css":"p {font-family:Arial;}",
+             "cardId": 1502098034048,
+             "interval": 23,
+             "note":1502298033753
+         }
+     ],
+     "error": null
+ }
+
+
+
+=head2 Media
+
+
+=head3 storeMediaFile
+
+Stores a file with the specified base64-encoded contents inside the media folder. To prevent Anki from removing
+files not used by any cards (e.g. for configuration files), prefix the filename with an underscore. These files are
+still synchronized to AnkiWeb.
+
+I<Sample request>:
+ 
+ {
+     "action": "storeMediaFile",
+     "version": 6,
+     "params": {
+         "filename": "_hello.txt",
+         "data": "SGVsbG8sIHdvcmxkIQ=="
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+I<Content of C<_hello.txt>>:
+ 
+ Hello world!
+
+
+
+=head3 retrieveMediaFile
+
+Retrieves the base64-encoded contents of the specified file, returning C<false> if the file does not exist.
+
+I<Sample request>:
+ 
+ {
+     "action": "retrieveMediaFile",
+     "version": 6,
+     "params": {
+         "filename": "_hello.txt"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": "SGVsbG8sIHdvcmxkIQ==",
+     "error": null
+ }
+
+
+
+=head3 deleteMediaFile
+
+Deletes the specified file inside the media folder.
+
+I<Sample request>:
+ 
+ {
+     "action": "deleteMediaFile",
+     "version": 6,
+     "params": {
+         "filename": "_hello.txt"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head2 Graphical
+
+
+=head3 guiBrowse
+
+Invokes the I<Card Browser> dialog and searches for a given query. Returns an array of identifiers of the cards that
+were found.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiBrowse",
+     "version": 6,
+     "params": {
+         "query": "deck:current"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [1494723142483, 1494703460437, 1494703479525],
+     "error": null
+ }
+
+
+
+=head3 guiAddCards
+
+Invokes the I<Add Cards> dialog, presets the note using the given deck and model, with the provided field values and tags.
+Invoking it multiple times closes the old window and I<reopen the window> with the new provided values.
+
+The C<closeAfterAdding> member inside C<options> group can be set to true to create a dialog that closes upon adding the note.
+Invoking the action mutliple times with this option will create I<multiple windows>.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiAddCards",
+     "version": 6,
+     "params": {
+         "note": {
+             "deckName": "Default",
+             "modelName": "Cloze",
+             "fields": {
+                 "Text": "The capital of Romania is {{c1::Bucharest}}",
+                 "Extra": "Romania is a country in Europe"
+             },
+             "options": {
+                 "closeAfterAdding": true
+             },
+             "tags": [
+               "countries"
+             ]
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 guiCurrentCard
+
+Returns information about the current card or C<null> if not in review mode.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiCurrentCard",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": {
+         "answer": "back content",
+         "question": "front content",
+         "deckName": "Default",
+         "modelName": "Basic",
+         "fieldOrder": 0,
+         "fields": {
+             "Front": {"value": "front content", "order": 0},
+             "Back": {"value": "back content", "order": 1}
+         },
+         "template": "Forward",
+         "cardId": 1498938915662,
+         "buttons": [1, 2, 3],
+         "nextReviews": ["<1m", "<10m", "4d"]
+     },
+     "error": null
+ }
+
+
+
+=head3 guiStartCardTimer
+
+Starts or resets the C<timerStarted> value for the current card. This is useful for deferring the start time to when
+it is displayed via the API, allowing the recorded time taken to answer the card to be more accurate when calling
+C<guiAnswerCard>.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiStartCardTimer",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 guiShowQuestion
+
+Shows question text for the current card; returns C<true> if in review mode or C<false> otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiShowQuestion",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 guiShowAnswer
+
+Shows answer text for the current card; returns C<true> if in review mode or C<false> otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiShowAnswer",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 guiAnswerCard
+
+Answers the current card; returns C<true> if succeeded or C<false> otherwise. Note that the answer for the current
+card must be displayed before before any answer can be accepted by Anki.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiAnswerCard",
+     "version": 6,
+     "params": {
+         "ease": 1
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 guiDeckOverview
+
+Opens the I<Deck Overview> dialog for the deck with the given name; returns C<true> if succeeded or C<false> otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiDeckOverview",
+     "version": 6,
+     "params": {
+         "name": "Default"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 guiDeckBrowser
+
+Opens the I<Deck Browser> dialog.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiDeckBrowser",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 guiDeckReview
+
+Starts review for the deck with the given name; returns C<true> if succeeded or C<false> otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiDeckReview",
+     "version": 6,
+     "params": {
+         "name": "Default"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 guiExitAnki
+
+Schedules a request to gracefully close Anki. This operation is asynchronous, so it will return immediately and
+won't wait until the Anki process actually terminates.
+
+I<Sample request>:
+ 
+ {
+     "action": "guiExitAnki",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }

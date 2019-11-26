@@ -1,7 +1,9 @@
 native:
   debian:
-    packages: ~
+    packages:
+      - anki
   macos-homebrew:
-    packages: ~
+    packages:
+      - anki # in homebrew-cask
   msys2-mingw64:
     packages: ~
