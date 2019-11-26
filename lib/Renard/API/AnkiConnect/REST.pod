@@ -666,6 +666,125 @@ I<Sample result>
 
 
 
+=head3 modelTemplates
+
+Returns an object indicating the template content for each card connected to the provided model by name.
+
+I<Sample request>:
+ 
+ {
+     "action": "modelTemplates",
+     "version": 6,
+     "params": {
+         "modelName": "Basic (and reversed card)"
+     }
+ }
+
+
+I<Sample result>
+ 
+ {
+     "result": {
+         "Card 1": {
+             "Front": "{{Front}}",
+             "Back": "{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}"
+         },
+         "Card 2": {
+             "Front": "{{Back}}",
+             "Back": "{{FrontSide}}\n\n<hr id=answer>\n\n{{Front}}"
+         }
+     },
+     "error": null
+ }
+
+
+
+=head3 modelStyling
+
+Gets the CSS styling for the provided model by name.
+
+I<Sample request>:
+ 
+ {
+     "action": "modelStyling",
+     "version": 6,
+     "params": {
+         "modelName": "Basic (and reversed card)"
+     }
+ }
+
+
+I<Sample result>
+ 
+ {
+     "result": {
+         "css": ".card {\n font-family: arial;\n font-size: 20px;\n text-align: center;\n color: black;\n background-color: white;\n}\n"
+     },
+     "error": null
+ }
+
+
+
+=head3 updateModelTemplates
+
+Modify the templates of an existing model by name. Only specifies cards and specified sides will be modified.
+If an existing card or side is not included in the request, it will be left unchanged.
+
+I<Sample request>:
+ 
+ {
+     "action": "updateModelTemplates",
+     "version": 6,
+     "params": {
+         "model": {
+             "name": "Custom",
+             "templates": {
+                 "Card 1": {
+                     "Front": "{{Question}}?",
+                     "Back": "{{Answer}}!"
+                 }
+             }
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
+=head3 updateModelStyling
+
+Modify the CSS styling of an existing model by name.
+
+I<Sample request>:
+ 
+ {
+     "action": "updateModelStyling",
+     "version": 6,
+     "params": {
+         "model": {
+             "name": "Custom",
+             "css": "p { color: blue; }"
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
+
 =head2 Notes
 
 
