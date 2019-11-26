@@ -45,7 +45,7 @@ package AnkiConnect::API::Extract {
 		$markdown =~ s/^####/##/mg;
 
 		# Change the list of API calls into H3
-		$markdown =~ s/^\* \s+ \Q**\E (?<api>.*) \Q**\E/### $+{api}/mgx;
+		$markdown =~ s/^\* \s+ \Q**\E (?<api>.*) \Q**\E/### `$+{api}`/mgx;
 		$markdown =~ s/^(\ {4}|\t)//mgx;
 
 		# Patch to fix codeblock
@@ -62,7 +62,18 @@ package AnkiConnect::API::Extract {
 		);
 		utf8::decode($pod);
 
-		path($self->lib_path)->child(qw(Renard API AnkiConnect REST.pod))->spew_utf8($pod);
+		substr($pod, 0, 0) = <<EOF;
+# PODNAME: Renard::API::AnkiConnect::REST
+
+=for Pod::Coverage uri net_async_http api
+
+=cut
+
+EOF
+
+		my $output = path($self->lib_path)->child(qw(Renard API AnkiConnect REST.pod));
+		$output->parent->mkpath;
+		$output->spew_utf8($pod);
 	}
 }
 

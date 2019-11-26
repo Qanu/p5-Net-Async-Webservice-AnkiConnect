@@ -2,6 +2,10 @@ use Renard::Incunabula::Common::Setup;
 package Renard::API::AnkiConnect::REST;
 # ABSTRACT: REST API for AnkiConnect
 
+=for Pod::Coverage uri net_async_http api
+
+=cut
+
 use Mu;
 use Function::Parameters;
 use JSON::MaybeXS;
@@ -10,11 +14,24 @@ use namespace::clean;
 
 use constant API_VERSION => 6;
 
+=attr uri
+
+A L<URI> for the AnkiConnect HTTP server.
+
+=cut
 has uri => (
 	is => 'ro',
 	isa => Uri,
 	default => sub { URI->new('http://localhost:8765') }
 );
+
+=attr net_async_http
+
+(required)
+
+An instance of L<Net::Async::HTTP> that is used to retrieve the API endpoints.
+
+=cut
 has net_async_http => (
 	is => 'ro',
 	isa => InstanceOf['Net::Async::HTTP'],

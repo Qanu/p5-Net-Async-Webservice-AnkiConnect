@@ -1,10 +1,16 @@
+# PODNAME: Renard::API::AnkiConnect::REST
+
+=for Pod::Coverage uri net_async_http api
+
+=cut
+
 =encoding utf8
 
 
 =head2 Miscellaneous
 
 
-=head3 version
+=head3 C<version>
 
 Gets the version of the API exposed by this plugin. Currently versions C<1> through C<6> are defined.
 
@@ -29,7 +35,7 @@ I<Sample result>:
 
 
 
-=head3 upgrade
+=head3 C<upgrade>
 
 Displays a confirmation dialog box in Anki asking the user if they wish to upgrade AnkiConnect to the latest version
 from the project's L<master branch|https://raw.githubusercontent.com/FooSoft/anki-connect/master/AnkiConnect.py> on
@@ -52,9 +58,9 @@ I<Sample result>:
 
 
 
-=head3 sync
+=head3 C<sync>
 
-Synchronizes the local anki collections with ankiweb.
+Synchronizes the local Anki collections with AnkiWeb.
 
 I<Sample request>:
  
@@ -73,7 +79,7 @@ I<Sample result>:
 
 
 
-=head3 loadProfile
+=head3 C<loadProfile>
 
 Selects the profile specified in request.
 
@@ -97,7 +103,7 @@ I<Sample result>:
 
 
 
-=head3 multi
+=head3 C<multi>
 
 Performs multiple actions in one request, returning an array with the response of each action (in the given order).
 
@@ -133,7 +139,7 @@ I<Sample result>:
 =head2 Decks
 
 
-=head3 deckNames
+=head3 C<deckNames>
 
 Gets the complete list of deck names for the current user.
 
@@ -154,7 +160,7 @@ I<Sample result>:
 
 
 
-=head3 deckNamesAndIds
+=head3 C<deckNamesAndIds>
 
 Gets the complete list of deck names and their respective IDs for the current user.
 
@@ -175,7 +181,7 @@ I<Sample result>:
 
 
 
-=head3 getDecks
+=head3 C<getDecks>
 
 Accepts an array of card IDs and returns an object with each deck name as a key, and its value an array of the given
 cards which belong to it.
@@ -203,7 +209,7 @@ I<Sample result>:
 
 
 
-=head3 createDeck
+=head3 C<createDeck>
 
 Create a new empty deck. Will not overwrite a deck that exists with the same name.
 
@@ -227,7 +233,7 @@ I<Sample result>:
 
 
 
-=head3 changeDeck
+=head3 C<changeDeck>
 
 Moves cards with the given IDs to a different deck, creating the deck if it doesn't exist yet.
 
@@ -252,7 +258,7 @@ I<Sample result>:
 
 
 
-=head3 deleteDecks
+=head3 C<deleteDecks>
 
 Deletes decks with the given names. If C<cardsToo> is C<true> (defaults to C<false> if unspecified), the cards within
 the deleted decks will also be deleted; otherwise they will be moved to the default deck.
@@ -278,7 +284,7 @@ I<Sample result>:
 
 
 
-=head3 getDeckConfig
+=head3 C<getDeckConfig>
 
 Gets the configuration group object for the given deck.
 
@@ -337,7 +343,7 @@ I<Sample result>:
 
 
 
-=head3 saveDeckConfig
+=head3 C<saveDeckConfig>
 
 Saves the given configuration group, returning C<true> on success or C<false> if the ID of the configuration group is
 invalid (such as when it does not exist).
@@ -397,7 +403,7 @@ I<Sample result>:
 
 
 
-=head3 setDeckConfigId
+=head3 C<setDeckConfigId>
 
 Changes the configuration group for the given decks to the one with the given ID. Returns C<true> on success or
 C<false> if the given configuration group or any of the given decks do not exist.
@@ -423,7 +429,7 @@ I<Sample result>:
 
 
 
-=head3 cloneDeckConfigId
+=head3 C<cloneDeckConfigId>
 
 Creates a new configuration group with the given name, cloning from the group with the given ID, or from the default
 group if this is unspecified. Returns the ID of the new configuration group, or C<false> if the specified group to
@@ -450,7 +456,7 @@ I<Sample result>:
 
 
 
-=head3 removeDeckConfigId
+=head3 C<removeDeckConfigId>
 
 Removes the configuration group with the given ID, returning C<true> if successful, or C<false> if attempting to
 remove either the default configuration group (ID = 1) or a configuration group that does not exist.
@@ -478,7 +484,7 @@ I<Sample result>:
 =head2 Models
 
 
-=head3 modelNames
+=head3 C<modelNames>
 
 Gets the complete list of model names for the current user.
 
@@ -499,7 +505,7 @@ I<Sample result>:
 
 
 
-=head3 modelNamesAndIds
+=head3 C<modelNamesAndIds>
 
 Gets the complete list of model names and their corresponding IDs for the current user.
 
@@ -525,7 +531,7 @@ I<Sample result>:
 
 
 
-=head3 modelFieldNames
+=head3 C<modelFieldNames>
 
 Gets the complete list of field names for the provided model name.
 
@@ -549,7 +555,7 @@ I<Sample result>:
 
 
 
-=head3 modelFieldsOnTemplates
+=head3 C<modelFieldsOnTemplates>
 
 Returns an object indicating the fields on the question and answer side of each card template for the given model
 name. The question side is given first in each array.
@@ -577,7 +583,7 @@ I<Sample result>:
 
 
 
-=head3 createModel
+=head3 C<createModel>
 
 Creates a new model to be used in Anki. User must provide the C<modelName>, C<inOrderFields> and C<cardTemplates> to be
 used in the model.
@@ -666,7 +672,7 @@ I<Sample result>
 
 
 
-=head3 modelTemplates
+=head3 C<modelTemplates>
 
 Returns an object indicating the template content for each card connected to the provided model by name.
 
@@ -699,7 +705,7 @@ I<Sample result>
 
 
 
-=head3 modelStyling
+=head3 C<modelStyling>
 
 Gets the CSS styling for the provided model by name.
 
@@ -725,7 +731,7 @@ I<Sample result>
 
 
 
-=head3 updateModelTemplates
+=head3 C<updateModelTemplates>
 
 Modify the templates of an existing model by name. Only specifies cards and specified sides will be modified.
 If an existing card or side is not included in the request, it will be left unchanged.
@@ -758,7 +764,7 @@ I<Sample result>:
 
 
 
-=head3 updateModelStyling
+=head3 C<updateModelStyling>
 
 Modify the CSS styling of an existing model by name.
 
@@ -788,7 +794,7 @@ I<Sample result>:
 =head2 Notes
 
 
-=head3 addNote
+=head3 C<addNote>
 
 Creates a note using the given deck and model, with the provided field values and tags. Returns the identifier of
 the created note created on success, and C<null> on failure.
@@ -842,7 +848,7 @@ I<Sample result>:
 
 
 
-=head3 addNotes
+=head3 C<addNotes>
 
 Creates multiple notes using the given deck and model, with the provided field values and tags. Returns an array of
 identifiers of the created notes (notes that could not be created will have a C<null> identifier). Please see the
@@ -888,7 +894,7 @@ I<Sample result>:
 
 
 
-=head3 canAddNotes
+=head3 C<canAddNotes>
 
 Accepts an array of objects which define parameters for candidate notes (see C<addNote>) and returns an array of
 booleans indicating whether or not the parameters at the corresponding index could be used to create a new note.
@@ -925,7 +931,7 @@ I<Sample result>:
 
 
 
-=head3 updateNoteFields
+=head3 C<updateNoteFields>
 
 Modify the fields of an exist note.
 
@@ -955,7 +961,7 @@ I<Sample result>:
 
 
 
-=head3 addTags
+=head3 C<addTags>
 
 Adds tags to notes by note ID.
 
@@ -980,7 +986,7 @@ I<Sample result>:
 
 
 
-=head3 removeTags
+=head3 C<removeTags>
 
 Remove tags from notes by note ID.
 
@@ -1005,7 +1011,7 @@ I<Sample result>:
 
 
 
-=head3 getTags
+=head3 C<getTags>
 
 Gets the complete list of tags for the current user.
 
@@ -1026,7 +1032,7 @@ I<Sample result>:
 
 
 
-=head3 findNotes
+=head3 C<findNotes>
 
 Returns an array of note IDs for a given query. Same query syntax as C<guiBrowse>.
 
@@ -1050,7 +1056,7 @@ I<Sample result>:
 
 
 
-=head3 notesInfo
+=head3 C<notesInfo>
 
 Returns a list of objects containing for each note ID the note fields, tags, note type and the cards belonging to
 the note.
@@ -1085,7 +1091,7 @@ I<Sample result>:
 
 
 
-=head3 deleteNotes
+=head3 C<deleteNotes>
 
 Deletes notes with the given ids. If a note has several cards associated with it, all associated cards will be deleted.
 
@@ -1112,7 +1118,7 @@ I<Sample result>:
 =head2 Cards
 
 
-=head3 suspend
+=head3 C<suspend>
 
 Suspend cards by card ID; returns C<true> if successful (at least one card wasn't already suspended) or C<false>
 otherwise.
@@ -1137,7 +1143,7 @@ I<Sample result>:
 
 
 
-=head3 unsuspend
+=head3 C<unsuspend>
 
 Unsuspend cards by card ID; returns C<true> if successful (at least one card was previously suspended) or C<false>
 otherwise.
@@ -1162,7 +1168,7 @@ I<Sample result>:
 
 
 
-=head3 areSuspended
+=head3 C<areSuspended>
 
 Returns an array indicating whether each of the given cards is suspended (in the same order).
 
@@ -1186,7 +1192,7 @@ I<Sample result>:
 
 
 
-=head3 areDue
+=head3 C<areDue>
 
 Returns an array indicating whether each of the given cards is due (in the same order). I<Note>: cards in the
 learning queue with a large interval (over 20 minutes) are treated as not due until the time of their interval has
@@ -1212,7 +1218,7 @@ I<Sample result>:
 
 
 
-=head3 getIntervals
+=head3 C<getIntervals>
 
 Returns an array of the most recent intervals for each given card ID, or a 2-dimensional array of all the intervals
 for each given card ID when C<complete> is C<true>. Negative intervals are in seconds and positive intervals in days.
@@ -1260,7 +1266,7 @@ I<Sample result 2>:
 
 
 
-=head3 findCards
+=head3 C<findCards>
 
 Returns an array of card IDs for a given query. Functionally identical to C<guiBrowse> but doesn't use the GUI for
 better performance.
@@ -1285,7 +1291,7 @@ I<Sample result>:
 
 
 
-=head3 cardsToNotes
+=head3 C<cardsToNotes>
 
 Returns an unordered array of note IDs for the given card IDs. For cards with the same note, the ID is only given
 once in the array.
@@ -1310,7 +1316,7 @@ I<Sample result>:
 
 
 
-=head3 cardsInfo
+=head3 C<cardsInfo>
 
 Returns a list of objects containing for each card ID the card fields, front and back sides including CSS, note
 type, the note that the card belongs to, and deck name, as well as ease and interval.
@@ -1369,9 +1375,9 @@ I<Sample result>:
 =head2 Media
 
 
-=head3 storeMediaFile
+=head3 C<storeMediaFile>
 
-Stores a file with the specified base64-encoded contents inside the media folder. To prevent Anki from removing
+Stores a file with the specified Base64-encoded contents inside the media folder. To prevent Anki from removing
 files not used by any cards (e.g. for configuration files), prefix the filename with an underscore. These files are
 still synchronized to AnkiWeb.
 
@@ -1401,9 +1407,9 @@ I<Content of C<_hello.txt>>:
 
 
 
-=head3 retrieveMediaFile
+=head3 C<retrieveMediaFile>
 
-Retrieves the base64-encoded contents of the specified file, returning C<false> if the file does not exist.
+Retrieves the Base64-encoded contents of the specified file, returning C<false> if the file does not exist.
 
 I<Sample request>:
  
@@ -1425,7 +1431,7 @@ I<Sample result>:
 
 
 
-=head3 deleteMediaFile
+=head3 C<deleteMediaFile>
 
 Deletes the specified file inside the media folder.
 
@@ -1452,7 +1458,7 @@ I<Sample result>:
 =head2 Graphical
 
 
-=head3 guiBrowse
+=head3 C<guiBrowse>
 
 Invokes the I<Card Browser> dialog and searches for a given query. Returns an array of identifiers of the cards that
 were found.
@@ -1477,13 +1483,13 @@ I<Sample result>:
 
 
 
-=head3 guiAddCards
+=head3 C<guiAddCards>
 
 Invokes the I<Add Cards> dialog, presets the note using the given deck and model, with the provided field values and tags.
 Invoking it multiple times closes the old window and I<reopen the window> with the new provided values.
 
 The C<closeAfterAdding> member inside C<options> group can be set to true to create a dialog that closes upon adding the note.
-Invoking the action mutliple times with this option will create I<multiple windows>.
+Invoking the action multiple times with this option will create I<multiple windows>.
 
 I<Sample request>:
  
@@ -1518,7 +1524,7 @@ I<Sample result>:
 
 
 
-=head3 guiCurrentCard
+=head3 C<guiCurrentCard>
 
 Returns information about the current card or C<null> if not in review mode.
 
@@ -1553,7 +1559,7 @@ I<Sample result>:
 
 
 
-=head3 guiStartCardTimer
+=head3 C<guiStartCardTimer>
 
 Starts or resets the C<timerStarted> value for the current card. This is useful for deferring the start time to when
 it is displayed via the API, allowing the recorded time taken to answer the card to be more accurate when calling
@@ -1576,7 +1582,7 @@ I<Sample result>:
 
 
 
-=head3 guiShowQuestion
+=head3 C<guiShowQuestion>
 
 Shows question text for the current card; returns C<true> if in review mode or C<false> otherwise.
 
@@ -1597,7 +1603,7 @@ I<Sample result>:
 
 
 
-=head3 guiShowAnswer
+=head3 C<guiShowAnswer>
 
 Shows answer text for the current card; returns C<true> if in review mode or C<false> otherwise.
 
@@ -1618,7 +1624,7 @@ I<Sample result>:
 
 
 
-=head3 guiAnswerCard
+=head3 C<guiAnswerCard>
 
 Answers the current card; returns C<true> if succeeded or C<false> otherwise. Note that the answer for the current
 card must be displayed before before any answer can be accepted by Anki.
@@ -1643,7 +1649,7 @@ I<Sample result>:
 
 
 
-=head3 guiDeckOverview
+=head3 C<guiDeckOverview>
 
 Opens the I<Deck Overview> dialog for the deck with the given name; returns C<true> if succeeded or C<false> otherwise.
 
@@ -1667,7 +1673,7 @@ I<Sample result>:
 
 
 
-=head3 guiDeckBrowser
+=head3 C<guiDeckBrowser>
 
 Opens the I<Deck Browser> dialog.
 
@@ -1688,7 +1694,7 @@ I<Sample result>:
 
 
 
-=head3 guiDeckReview
+=head3 C<guiDeckReview>
 
 Starts review for the deck with the given name; returns C<true> if succeeded or C<false> otherwise.
 
@@ -1712,7 +1718,7 @@ I<Sample result>:
 
 
 
-=head3 guiExitAnki
+=head3 C<guiExitAnki>
 
 Schedules a request to gracefully close Anki. This operation is asynchronous, so it will return immediately and
 won't wait until the Anki process actually terminates.
