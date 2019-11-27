@@ -16,6 +16,8 @@ my $addon_directory = $unix_path->child($ankiconnect_addon_id);
 my $addon_python = $addon_directory->child('__init__.py');
 if( -d $unix_path && ! -f $addon_python ) {
 	use HTTP::Tiny;
+	use IO::Socket::SSL;
+	use Net::SSLeay;
 	$addon_python->parent->mkpath;
 	my $response = HTTP::Tiny->new->get($ankiconnect_url);
 	die "Unable to install addon!\n" unless $response->{success};
