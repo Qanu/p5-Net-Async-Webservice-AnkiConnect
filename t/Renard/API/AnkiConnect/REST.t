@@ -6,15 +6,27 @@ use Renard::Incunabula::Common::Setup;
 use Renard::API::AnkiConnect::REST;
 use IO::Async::Loop;
 use Net::Async::HTTP;
+use Proc::Killall;
 
 use lib 't/lib';
 
+my $procs = killall('HUP', 'anki');
+sleep 1 if( $procs );
+
 my $ankiconnect_url = 'https://raw.githubusercontent.com/FooSoft/anki-connect/master/AnkiConnect.py';
 my $ankiconnect_addon_id = '2055492159';
-my $unix_path = path('~/.local/share/Anki2/addons21');
-my $addon_directory = $unix_path->child($ankiconnect_addon_id);
+my $unix_path = path('~/.local/share/Anki2');
+
+my $base_dir = Path::Tiny->tempdir;
+my $temp_user = "__Temporary Test User__";
+
+my $addons_path = $base_dir->child('addons21');
+my $addon_directory = $addons_path->child($ankiconnect_addon_id);
 my $addon_python = $addon_directory->child('__init__.py');
-if( -d $unix_path && ! -f $addon_python ) {
+if( $^O eq 'linux' && ! -f $addon_python ) {
+	system(qw(python3 maint/anki-setup.py),
+		qw(--base), $base_dir,
+		qw(--profile), $temp_user );
 	use HTTP::Tiny;
 	use IO::Socket::SSL;
 	use Net::SSLeay;
@@ -31,7 +43,10 @@ my $pid = fork;
 if( defined $pid && $pid == 0 ) {
 	close STDERR;
 	close STDOUT;
-	exec(qw(anki));
+	exec(qw(anki),
+		qw(-b), $base_dir,
+		qw(-p), $temp_user,
+	);
 } else {
 	sleep 1;
 };
@@ -50,9 +65,12 @@ subtest "Testing API creation" => fun() {
 		is $api_response->{result}, Renard::API::AnkiConnect::REST::API_VERSION, 'check that version matches';
 	})->on_fail(sub {
 		fail 'could not get response';
+	})->followed_by(sub {
+		$rest->guiExitAnki->get;
 	});
 
 	$loop->await($future);
+	waitpid $pid, 0;
 };
 
 done_testing;
