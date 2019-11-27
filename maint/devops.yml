@@ -7,3 +7,6 @@ native:
       - anki # in homebrew-cask
   msys2-mingw64:
     packages: ~
+  chocolatey:
+    packages:
+      - anki
