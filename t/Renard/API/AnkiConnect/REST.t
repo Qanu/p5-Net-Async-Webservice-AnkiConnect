@@ -9,6 +9,21 @@ use Net::Async::HTTP;
 
 use lib 't/lib';
 
+my $ankiconnect_url = 'https://raw.githubusercontent.com/FooSoft/anki-connect/master/AnkiConnect.py';
+my $ankiconnect_addon_id = '2055492159';
+my $unix_path = path('~/.local/share/Anki2/addons21');
+my $addon_directory = $unix_path->child($ankiconnect_addon_id);
+my $addon_python = $addon_directory->child('__init__.py');
+if( -d $unix_path && ! -f $addon_python ) {
+	use HTTP::Tiny;
+	$addon_python->parent->mkpath;
+	my $response = HTTP::Tiny->new->get($ankiconnect_url);
+	die "Unable to install addon!\n" unless $response->{success};
+	$addon_python->spew_utf8($response->{content});
+
+	$addon_directory->child('meta.json')->spew_utf8(qq|{"name": "AnkiConnect", "mod": @{[ time() ]}}|);
+}
+
 # Start Anki
 my $pid = fork;
 if( defined $pid && $pid == 0 ) {
