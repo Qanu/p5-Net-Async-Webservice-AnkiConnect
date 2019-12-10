@@ -72,7 +72,7 @@ if( defined $pid && $pid == 0 ) {
 		qw(-p), $temp_user,
 	);
 } else {
-	sleep 3;
+	sleep 6;
 };
 
 subtest "Testing API creation" => fun() {
