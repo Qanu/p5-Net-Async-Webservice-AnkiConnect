@@ -75,6 +75,9 @@ if( $^O eq 'linux' ) {
 # Start Anki
 my $function = IO::Async::Function->new(
 	code => sub {
+		close STDIN;
+		close STDOUT;
+		close STDERR;
 		my $exit = system(
 			$anki,
 			qw(-b), $base_dir,
