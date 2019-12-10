@@ -5,8 +5,10 @@ use Test::Most tests => 1;
 use Renard::Incunabula::Common::Setup;
 use Renard::API::AnkiConnect::REST;
 use IO::Async::Loop;
+use IO::Async::Function;
 use Net::Async::HTTP;
 use Proc::Killall;
+use File::HomeDir;
 
 use lib 't/lib';
 
@@ -15,7 +17,7 @@ sleep 1 if( $procs );
 
 my $unix_path = path('~/.local/share/Anki2');
 my $macos_path = path('~/Library/Application Support/Anki2');
-
+my $win32_path = path(File::HomeDir->my_data)->parent->child(qw(Roaming Anki2));
 
 fun install_ankiconnect( $base_dir ) {
 	my $ankiconnect_url = 'https://raw.githubusercontent.com/FooSoft/anki-connect/master/AnkiConnect.py';
@@ -55,30 +57,39 @@ my $temp_user = "User 1";
 create_anki_directory_using_skeleton($base_dir, $temp_user);
 install_ankiconnect($base_dir);
 
+my $loop = IO::Async::Loop->new;
+my $http = Net::Async::HTTP->new;
+$loop->add( $http );
+
+my $anki;
+if( $^O eq 'linux' ) {
+	$anki = qw(anki);
+} elsif( $^O eq 'darwin' ) {
+	my $macos_anki_path = path('/Applications/Anki.app/Contents/MacOS/Anki');
+	$anki = "$macos_anki_path";
+} elsif( $^O eq 'MSWin32' ) {
+	my $win_anki_path = path('C:/Program Files/Anki/anki.exe');
+	$anki = "$win_anki_path";
+}
+
 # Start Anki
-my $pid = fork;
-if( defined $pid && $pid == 0 ) {
-	close STDERR;
-	close STDOUT;
-	my $anki;
-	if( $^O eq 'linux' ) {
-		$anki = qw(anki);
-	} elsif( $^O eq 'darwin' ) {
-		my $macos_anki_path = path('/Applications/Anki.app/Contents/MacOS/Anki');
-		$anki = "$macos_anki_path";
-	}
-	exec($anki,
-		qw(-b), $base_dir,
-		qw(-p), $temp_user,
-	);
-} else {
-	sleep 6;
-};
+my $function = IO::Async::Function->new(
+	code => sub {
+		close STDIN;
+		close STDOUT;
+		close STDERR;
+		my $exit = system(
+			$anki,
+			qw(-b), $base_dir,
+			qw(-p), $temp_user,
+		);
+	},
+);
+$loop->add( $function );
+my $anki_func_future = $function->call( args => [] );
+sleep 6;
 
 subtest "Testing API creation" => fun() {
-	my $loop = IO::Async::Loop->new;
-	my $http = Net::Async::HTTP->new;
-	$loop->add( $http );
 	my $rest = Renard::API::AnkiConnect::REST->new(
 		net_async_http => $http,
 	);
@@ -93,8 +104,7 @@ subtest "Testing API creation" => fun() {
 		$rest->guiExitAnki->get;
 	});
 
-	$loop->await($future);
-	waitpid $pid, 0;
+	$loop->await_all($future, $anki_func_future);
 };
 
 done_testing;
