@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python3 maint/anki-setup.py --base maint/Anki2-skel --profile 'User 1'
