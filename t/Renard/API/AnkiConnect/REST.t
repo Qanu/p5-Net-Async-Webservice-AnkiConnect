@@ -12,8 +12,12 @@ use File::HomeDir;
 
 use lib 't/lib';
 
-my $procs = killall('HUP', 'anki');
-sleep 1 if( $procs );
+fun kill_anki() {
+	my $procs = killall('HUP', 'anki');
+	sleep 1 if( $procs );
+}
+
+kill_anki;
 
 my $unix_path = path('~/.local/share/Anki2');
 my $macos_path = path('~/Library/Application Support/Anki2');
@@ -107,6 +111,8 @@ subtest "Testing API creation" => fun() {
 		fail 'could not get response';
 	})->followed_by(sub {
 		$rest->guiExitAnki->get;
+		sleep 3;
+		kill_anki;
 	});
 
 	$loop->await_all($future, $anki_func_future);
