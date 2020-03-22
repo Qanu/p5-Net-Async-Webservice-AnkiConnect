@@ -41,7 +41,7 @@ fun install_ankiconnect( $base_dir ) {
 	my $addon_zip = Path::Tiny->tempfile( SUFFIX => ".zip" );
 	$addon_zip->spew_raw($response->{content});
 	my $zip = Archive::Zip->new( "$addon_zip" );
-	$zip->extractTree( "${ankiconnect_url_prefix}/plugin", "$addon_directory" );
+	$zip->extractTree( "${ankiconnect_url_prefix}/plugin", "@{[ $addon_directory->realpath ]}" );
 
 	$addon_directory->child('meta.json')->spew_utf8(qq|{"name": "AnkiConnect", "mod": @{[ time() ]}}|);
 }
