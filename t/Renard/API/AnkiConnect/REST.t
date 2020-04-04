@@ -13,7 +13,7 @@ use File::HomeDir;
 use lib 't/lib';
 
 fun kill_anki() {
-	my $procs = killall('HUP', 'anki');
+	my $procs = killall('HUP', qr/\b[aA]nki\b/);
 	sleep 1 if( $procs );
 }
 
