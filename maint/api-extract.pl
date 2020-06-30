@@ -45,10 +45,6 @@ package AnkiConnect::API::Extract {
 
 		my @actions = $markdown =~ m,(actions/[^)]+),g;
 
-		@actions = qw(actions/miscellaneous.md actions/decks.md
-			actions/models.md actions/notes.md actions/cards.md
-			actions/media.md actions/graphical.md);
-
 		return [ map { $self->root_path->child($_) } @actions ];
 	};
 
