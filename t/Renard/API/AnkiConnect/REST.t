@@ -102,7 +102,7 @@ subtest "Testing API creation" => fun() {
 	my $rest = Renard::API::AnkiConnect::REST->new(
 		net_async_http => $http,
 	);
-	can_ok $rest, qw(version upgrade sync);
+	can_ok $rest, qw(version sync);
 
 	my $future = $rest->version->on_done( sub {
 		my ($api_response) = @_;

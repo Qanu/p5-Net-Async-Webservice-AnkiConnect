@@ -50,6 +50,7 @@ package AnkiConnect::API::Extract {
 
 	method fix_spell($markdown) {
 		$markdown =~ s{Invoking the action mutliple times}{Invoking the action multiple times}msg or die "Not replaced";
+		$markdown =~ s{configured by user in anki}{configured by user in Anki}msg or die "Not replaced";
 
 		$markdown;
 	}

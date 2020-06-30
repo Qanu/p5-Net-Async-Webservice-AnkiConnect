@@ -61,7 +61,6 @@ fun api($name, %options) {
 }
 
 api version => ();
-api upgrade => ();
 api sync => ();
 api loadProfile => ();
 api multi => ();

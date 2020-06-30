@@ -1881,7 +1881,7 @@ I<Sample result>:
 
 =head2 C<getNumCardsReviewedToday>
 
-Gets the count of cards that have been reviewed in the current day (with day start time as configured by user in anki)
+Gets the count of cards that have been reviewed in the current day (with day start time as configured by user in Anki)
 
 I<Sample request>:
  
