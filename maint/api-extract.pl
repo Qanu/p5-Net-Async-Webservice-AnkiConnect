@@ -67,11 +67,8 @@ package AnkiConnect::API::Extract {
 		# Remove the GitHub-Markdown syntax tag for code blocks.
 		$markdown =~ s/```json/```/msg;
 
-		# Change the headings from H1 into H2.
-		$markdown =~ s/^# /## /mg;
-
-		# Change the list of API calls into H3
-		$markdown =~ s/^\* \s+ \Q**\E (?<api>.*) \Q**\E/### `$+{api}`/mgx;
+		# Change the list of API calls into H2
+		$markdown =~ s/^\* \s+ \Q**\E (?<api>.*) \Q**\E/## `$+{api}`/mgx;
 		$markdown =~ s/^(\ {4}|\t)//mgx;
 
 		# Patch to fix codeblock
