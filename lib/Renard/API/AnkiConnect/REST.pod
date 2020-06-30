@@ -7,7 +7,7 @@
 =encoding utf8
 
 
-=head2 Miscellaneous
+=head2 Miscellaneous Actions
 
 
 =head3 C<version>
@@ -35,29 +35,6 @@ I<Sample result>:
 
 
 
-=head3 C<upgrade>
-
-Displays a confirmation dialog box in Anki asking the user if they wish to upgrade AnkiConnect to the latest version
-from the project's L<master branch|https://raw.githubusercontent.com/FooSoft/anki-connect/master/AnkiConnect.py> on
-GitHub. Returns a boolean value indicating if the plugin was upgraded or not.
-
-I<Sample request>:
- 
- {
-     "action": "upgrade",
-     "version": 6
- }
-
-
-I<Sample result>:
- 
- {
-     "result": true,
-     "error": null
- }
-
-
-
 =head3 C<sync>
 
 Synchronizes the local Anki collections with AnkiWeb.
@@ -74,6 +51,27 @@ I<Sample result>:
  
  {
      "result": null,
+     "error": null
+ }
+
+
+
+=head3 C<getProfiles>
+
+Retrieve the list of profiles.
+
+I<Sample request>:
+ 
+ {
+     "action": "getProfiles",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": ["User 1"],
      "error": null
  }
 
@@ -136,7 +134,59 @@ I<Sample result>:
 
 
 
-=head2 Decks
+=head3 C<exportPackage>
+
+Exports a given deck in C<.apkg> format. Returns C<true> if successful or C<false> otherwise. The optional property
+C<includeSched> (default is C<false>) can be specified to include the cards' scheduling data.
+
+I<Sample request>:
+ 
+ {
+     "action": "exportPackage",
+     "version": 6,
+     "params": {
+         "deck": "Default",
+         "path": "/data/Deck.apkg",
+         "includeSched": true
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head3 C<importPackage>
+
+Imports a file in C<.apkg> format into the collection. Returns C<true> if successful or C<false> otherwise.
+Note that the file path is relative to Anki's collection.media folder, not to the client.
+
+I<Sample request>:
+ 
+ {
+     "action": "importPackage",
+     "version": 6,
+     "params": {
+         "path": "/data/Deck.apkg"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": true,
+     "error": null
+ }
+
+
+
+=head2 Deck Actions
 
 
 =head3 C<deckNames>
@@ -481,7 +531,7 @@ I<Sample result>:
 
 
 
-=head2 Models
+=head2 Model Actions
 
 
 =head3 C<modelNames>
@@ -586,7 +636,8 @@ I<Sample result>:
 =head3 C<createModel>
 
 Creates a new model to be used in Anki. User must provide the C<modelName>, C<inOrderFields> and C<cardTemplates> to be
-used in the model.
+used in the model. Optionally the C<Name> field can be provided for each entry of C<cardTemplates>. By default the
+card names will be C<Card 1>, C<Card 2>, and so on.
 
 I<Sample request>
  
@@ -599,6 +650,7 @@ I<Sample request>
          "css": "Optional CSS with default to builtin css",
          "cardTemplates": [
              {
+                 "Name": "My Card 1",
                  "Front": "Front html {{Field1}}",
                  "Back": "Back html  {{Field2}}"
              }
@@ -646,7 +698,7 @@ I<Sample result>
          ],
          "tmpls":[
              {
-                 "name":"Card 1",
+                 "name":"My Card 1",
                  "ord":0,
                  "qfmt":"",
                  "afmt":"This is the back of the card {{Field2}}",
@@ -791,7 +843,7 @@ I<Sample result>:
 
 
 
-=head2 Notes
+=head2 Note Actions
 
 
 =head3 C<addNote>
@@ -800,12 +852,14 @@ Creates a note using the given deck and model, with the provided field values an
 the created note created on success, and C<null> on failure.
 
 AnkiConnect can download audio files and embed them in newly created notes. The corresponding C<audio> note member is
-optional and can be omitted. If you choose to include it, the C<url> and C<filename> fields must be also defined. The
-C<skipHash> field can be optionally provided to skip the inclusion of downloaded files with an MD5 hash that matches
-the provided value. This is useful for avoiding the saving of error pages and stub files. The C<fields> member is a
-list of fields that should play audio when the card is displayed in Anki. The C<allowDuplicate> member inside
-C<options> group can be set to true to enable adding duplicate cards. Normally duplicate cards can not be added and
-trigger exception.
+optional and can be omitted. If you choose to include it, it should contain a single object or an array of objects
+with mandatory C<url> and C<filename> fields. The C<skipHash> field can be optionally provided to skip the inclusion of
+downloaded files with an MD5 hash that matches the provided value. This is useful for avoiding the saving of error
+pages and stub files. The C<fields> member is a list of fields that should play audio when the card is displayed in
+Anki. The C<allowDuplicate> member inside C<options> group can be set to true to enable adding duplicate cards.
+Normally duplicate cards can not be added and trigger exception. The C<duplicateScope> member inside C<options> can be
+used to specify the scope for which duplicates are checked. A value of C<"deck"> will only check for duplicates in the
+target deck; any other value will check the entire collection.
 
 I<Sample request>:
  
@@ -821,19 +875,20 @@ I<Sample request>:
                  "Back": "back content"
              },
              "options": {
-                 "allowDuplicate": false
+                 "allowDuplicate": false,
+                 "duplicateScope": "deck"
              },
              "tags": [
                  "yomichan"
              ],
-             "audio": {
+             "audio": [{
                  "url": "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kanji=猫&kana=ねこ",
                  "filename": "yomichan_ねこ_猫.mp3",
                  "skipHash": "7e2c2f954ef6051373ba916f000168dc",
                  "fields": [
                      "Front"
                  ]
-             }
+             }]
          }
      }
  }
@@ -871,14 +926,14 @@ I<Sample request>:
                  "tags": [
                      "yomichan"
                  ],
-                 "audio": {
+                 "audio": [{
                      "url": "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kanji=猫&kana=ねこ",
                      "filename": "yomichan_ねこ_猫.mp3",
                      "skipHash": "7e2c2f954ef6051373ba916f000168dc",
                      "fields": [
                          "Front"
                      ]
-                 }
+                 }]
              }
          ]
      }
@@ -933,7 +988,8 @@ I<Sample result>:
 
 =head3 C<updateNoteFields>
 
-Modify the fields of an exist note.
+Modify the fields of an exist note. You can also include audio files which will be added to the note with an
+optional C<audio> property. Please see the documentation for C<addNote> for an explanation of objects in the C<audio> array.
 
 I<Sample request>:
  
@@ -946,7 +1002,15 @@ I<Sample request>:
              "fields": {
                  "Front": "new front content",
                  "Back": "new back content"
-             }
+             },
+             "audio": [{
+                 "url": "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kanji=猫&kana=ねこ",
+                 "filename": "yomichan_ねこ_猫.mp3",
+                 "skipHash": "7e2c2f954ef6051373ba916f000168dc",
+                 "fields": [
+                     "Front"
+                 ]
+             }]
          }
      }
  }
@@ -1115,7 +1179,56 @@ I<Sample result>:
 
 
 
-=head2 Cards
+=head2 Card Actions
+
+
+=head3 C<getEaseFactors>
+
+Returns an array with the ease factor for each of the given cards (in the same order).
+
+I<Sample request>:
+ 
+ {
+     "action": "getEaseFactors",
+     "version": 6,
+     "params": {
+         "cards": [1483959291685, 1483959293217]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [4100, 3900],
+     "error": null
+ }
+
+
+
+=head3 C<setEaseFactors>
+
+Sets ease factor of cards by card ID; returns C<true> if successful (all cards existed) or C<false> otherwise.
+
+I<Sample request>:
+ 
+ {
+     "action": "setEaseFactors",
+     "version": 6,
+     "params": {
+         "cards": [1483959291685, 1483959293217],
+         "easeFactors": [4100, 3900]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [true, true],
+     "error": null
+ }
+
 
 
 =head3 C<suspend>
@@ -1372,14 +1485,15 @@ I<Sample result>:
 
 
 
-=head2 Media
+=head2 Media Actions
 
 
 =head3 C<storeMediaFile>
 
-Stores a file with the specified Base64-encoded contents inside the media folder. To prevent Anki from removing
-files not used by any cards (e.g. for configuration files), prefix the filename with an underscore. These files are
-still synchronized to AnkiWeb.
+Stores a file with the specified base64-encoded contents inside the media folder. alternatively you can specify a
+url from where the file shell be downloaded. If both field C<data> and C<url> are provided, the C<data> field will be
+used. To prevent Anki from removing files not used by any cards (e.g. for configuration files), prefix the filename
+with an underscore. These files are still synchronized to AnkiWeb.
 
 I<Sample request>:
  
@@ -1406,10 +1520,30 @@ I<Content of C<_hello.txt>>:
  Hello world!
 
 
+I<Sample request>:
+ 
+ {
+     "action": "storeMediaFile",
+     "version": 6,
+     "params": {
+         "filename": "_hello.txt",
+         "url": "https://url.to.file"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
+ }
+
+
 
 =head3 C<retrieveMediaFile>
 
-Retrieves the Base64-encoded contents of the specified file, returning C<false> if the file does not exist.
+Retrieves the base64-encoded contents of the specified file, returning C<false> if the file does not exist.
 
 I<Sample request>:
  
@@ -1455,7 +1589,7 @@ I<Sample result>:
 
 
 
-=head2 Graphical
+=head2 Graphical Actions
 
 
 =head3 C<guiBrowse>
@@ -1491,6 +1625,8 @@ Invoking it multiple times closes the old window and I<reopen the window> with t
 The C<closeAfterAdding> member inside C<options> group can be set to true to create a dialog that closes upon adding the note.
 Invoking the action multiple times with this option will create I<multiple windows>.
 
+The result is the ID of the note which would be added, if the user chose to confirm the I<Add Cards> dialogue.
+
 I<Sample request>:
  
  {
@@ -1518,7 +1654,7 @@ I<Sample request>:
 I<Sample result>:
  
  {
-     "result": null,
+     "result": 1496198395707,
      "error": null
  }
 
