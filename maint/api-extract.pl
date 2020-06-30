@@ -6,43 +6,69 @@ use Modern::Perl;
 
 package AnkiConnect::API::Extract {
 	use FindBin;
+
 	use Mu;
 	use CLI::Osprey;
 	use Function::Parameters;
 	use Path::Tiny;
+	use Types::Path::Tiny qw/Path/;
 	use Markdown::Pod;
 
 	option 'root_path' => (
 		is => 'ro',
 		format => 's',
 		doc => 'Root for AnkiConnect',
-		default => "$FindBin::Bin/../../FooSoft/anki-connect"
+		default => "$FindBin::Bin/../../FooSoft/anki-connect",
+		isa => Path,
+		coerce => 1,
 	);
 
 	option 'lib_path' => (
 		is => 'ro',
 		format => 's',
 		doc => 'Root for lib',
-		default => "$FindBin::Bin/../lib"
+		default => "$FindBin::Bin/../lib",
+		isa => Path,
+		coerce => 1,
 	);
 
 
 	lazy readme_path => method() {
-		path($self->root_path)->child('README.md');
+		$self->root_path->child('README.md');
 	};
 
-	method run() {
+	lazy action_paths => method() {
 		my $markdown = $self->readme_path->slurp_utf8;
-		$markdown =~ s/```json/```/msg;
 
 		# Start processing from after the "Supported Actions" header.
-		$markdown =~ s/.*\Q### Supported Actions ###\E//s;
+		$markdown =~ s/.*\Q### Supported Actions\E//s;
 
-		# The first heading at level 4
-		$markdown =~ s/.*?(\Q#### \E)/$1/s;
+		my @actions = $markdown =~ m,(actions/[^)]+),g;
 
-		# Change the headings from H4 into H2.
-		$markdown =~ s/^####/##/mg;
+		@actions = qw(actions/miscellaneous.md actions/decks.md
+			actions/models.md actions/notes.md actions/cards.md
+			actions/media.md actions/graphical.md);
+
+		return [ map { $self->root_path->child($_) } @actions ];
+	};
+
+	method fix_spell($markdown) {
+		$markdown =~ s{Invoking the action mutliple times}{Invoking the action multiple times}msg or die "Not replaced";
+
+		$markdown;
+	}
+
+	method run() {
+		$self->action_paths;
+
+		my $markdown = join "\n", map { $_->slurp_utf8 } @{ $self->action_paths };
+		$markdown = $self->fix_spell($markdown);
+
+		# Remove the GitHub-Markdown syntax tag for code blocks.
+		$markdown =~ s/```json/```/msg;
+
+		# Change the headings from H1 into H2.
+		$markdown =~ s/^# /## /mg;
 
 		# Change the list of API calls into H3
 		$markdown =~ s/^\* \s+ \Q**\E (?<api>.*) \Q**\E/### `$+{api}`/mgx;
@@ -53,7 +79,7 @@ package AnkiConnect::API::Extract {
 		$markdown =~ s/(^\s*\Q"media":[\E\n)\n/$1/mgs;
 		$markdown =~ s/(^\s*\Q"tags":[\E\n)\n/$1/ms;
 		$markdown =~ s/(^\s*\Q[\E\n)\n/$1/ms;
-		#say $markdown;
+		#binmode STDOUT, ':encoding(UTF-8)'; say $markdown;
 
 		my $m2p = Markdown::Pod->new;
 		my $pod = $m2p->markdown_to_pod(
@@ -71,7 +97,7 @@ package AnkiConnect::API::Extract {
 
 EOF
 
-		my $output = path($self->lib_path)->child(qw(Renard API AnkiConnect REST.pod));
+		my $output = $self->lib_path->child(qw(Renard API AnkiConnect REST.pod));
 		$output->parent->mkpath;
 		$output->spew_utf8($pod);
 	}
