@@ -10,6 +10,14 @@ Renard::API::AnkiConnect - API for AnkiConnect service
 
 version 0.001
 
+=head1 EXTENDS
+
+=over 4
+
+=item * L<Moo::Object>
+
+=back
+
 =head1 SEE ALSO
 
 L<Repository information|http://project-renard.github.io/doc/development/repo/p5-Renard-API-AnkiConnect/>
