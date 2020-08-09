@@ -292,7 +292,14 @@ I<Sample result>:
              "css":"p {font-family:Arial;}",
              "cardId": 1498938915662,
              "interval": 16,
-             "note":1502298033753
+             "note":1502298033753,
+             "ord": 1,
+             "type": 0,
+             "queue": 0,
+             "due": 1,
+             "reps": 1,
+             "lapses": 0,
+             "left": 6
          },
          {
              "answer": "back content",
@@ -307,7 +314,14 @@ I<Sample result>:
              "css":"p {font-family:Arial;}",
              "cardId": 1502098034048,
              "interval": 23,
-             "note":1502298033753
+             "note":1502298033753,
+             "ord": 1,
+             "type": 0,
+             "queue": 0,
+             "due": 1,
+             "reps": 1,
+             "lapses": 0,
+             "left": 6
          }
      ],
      "error": null
@@ -655,6 +669,77 @@ I<Sample result>:
  
  {
      "result": true,
+     "error": null
+ }
+
+
+
+=head2 C<updateCompleteDeck>
+
+Pastes all transmitted data into the database and reloads the collection. 
+You can send a deckName and corresponding cards, notes & models. 
+All cards are assumed to belong to the given deck.
+All notes referenced by given cards should be present. 
+All models referenced by given notes should be present.
+
+I<Sample request>:
+ 
+ {
+     "action": "updateCompleteDeck",
+     "version": 6,
+     "params": {
+         "data":  {
+             "deck": "test3",
+             "cards": {
+                  "1485369472028": {
+                      "id": 1485369472028,
+                      "nid": 1485369340204,
+                      "ord": 0,
+                      "type": 0,
+                      "queue": 0,
+                      "due": 1186031,
+                      "factor": 0,
+                      "ivl": 0,
+                      "reps": 0,
+                      "lapses": 0,
+                      "left": 0
+                  }
+             },
+             "notes": {
+                 "1485369340204": {
+                     "id": 1485369340204,
+                     "mid": 1375786181313,
+                     "fields": [
+                         "frontValue",
+                         "backValue"
+                     ],
+                     "tags": [
+                         "aTag"
+                     ]
+                 }
+             },
+             "models": {
+                 "1375786181313": {
+                     "id": 1375786181313,
+                     "name": "anotherModel",
+                     "fields": [
+                         "Front",
+                         "Back"
+                     ],
+                     "templateNames": [
+                         "Card 1"
+                     ]
+                 }
+             }
+         }
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
      "error": null
  }
 
@@ -1225,6 +1310,27 @@ I<Sample result>:
  
  {
      "result": true,
+     "error": null
+ }
+
+
+
+=head2 C<reloadCollection>
+
+Tells anki to reload all data from the database.
+
+I<Sample request>:
+ 
+ {
+     "action": "reloadCollection",
+     "version": 6
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
      "error": null
  }
 
@@ -1922,4 +2028,86 @@ I<Sample result>:
  {
      "error": null,
      "result": "<center> lots of HTML here </center>"
+ }
+
+
+
+=head2 C<cardReviews>
+
+Requests all card reviews for a specified deck after a certain time. 
+C<startID> is the latest unix time not included in the result.
+Returns a list of 9-tuples C<(reviewTime, cardID, usn, buttonPressed, newInterval, previousInterval, newFactor, reviewDuration, reviewType)>
+
+I<Sample request>:
+ 
+ {
+     "action": "cardReviews",
+     "version": 6,
+     "params": {
+         "deck": "default",
+         "startID": 1594194095740
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": [
+         [1594194095746, 1485369733217, -1, 3,   4, -60, 2500, 6157, 0],
+         [1594201393292, 1485369902086, -1, 1, -60, -60,    0, 4846, 0]
+     ],
+     "error": null
+ }
+
+
+
+=head2 C<getLatestReviewID>
+
+Returns the unix time of the latest review for the given deck. 0 if no review has ever been made for the deck.
+
+I<Sample request>:
+ 
+ {
+     "action": "getLatestReviewID",
+     "version": 6,
+     "params": {
+         "deck": "default"
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": 1594194095746,
+     "error": null
+ }
+
+
+
+=head2 C<insertReviews>
+
+Inserts the given reviews into the database. Required format: list of 9-tuples C<(reviewTime, cardID, usn, buttonPressed, newInterval, previousInterval, newFactor, reviewDuration, reviewType)>                                                                       
+
+
+I<Sample request>:
+ 
+ {
+     "action": "insertReviews",
+     "version": 6,
+     "params": {
+         "reviews": [
+             [1594194095746, 1485369733217, -1, 3,   4, -60, 2500, 6157, 0],
+             [1594201393292, 1485369902086, -1, 1, -60, -60,    0, 4846, 0]
+         ]
+     }
+ }
+
+
+I<Sample result>:
+ 
+ {
+     "result": null,
+     "error": null
  }
