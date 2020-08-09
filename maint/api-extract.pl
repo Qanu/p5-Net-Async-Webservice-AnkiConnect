@@ -85,6 +85,8 @@ package AnkiConnect::API::Extract {
 		substr($pod, 0, 0) = <<EOF;
 # PODNAME: Renard::API::AnkiConnect::REST
 
+1;
+
 =for Pod::Coverage uri net_async_http api
 
 =cut

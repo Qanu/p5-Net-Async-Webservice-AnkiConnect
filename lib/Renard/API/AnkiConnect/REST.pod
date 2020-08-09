@@ -1,5 +1,7 @@
 # PODNAME: Renard::API::AnkiConnect::REST
 
+1;
+
 =for Pod::Coverage uri net_async_http api
 
 =cut
