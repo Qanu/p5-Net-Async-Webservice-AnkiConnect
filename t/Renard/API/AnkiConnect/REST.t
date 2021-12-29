@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 1;
+use Test::Most;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::API::AnkiConnect::REST;
@@ -9,8 +9,26 @@ use IO::Async::Function;
 use Net::Async::HTTP;
 use Proc::Killall;
 use File::HomeDir;
+use File::Which qw(which);
 
 use lib 't/lib';
+
+my $anki;
+if( $^O eq 'linux' ) {
+	$anki = qw(anki);
+} elsif( $^O eq 'darwin' ) {
+	my $macos_anki_path = path('/Applications/Anki.app/Contents/MacOS/Anki');
+	$anki = "$macos_anki_path";
+} elsif( $^O eq 'MSWin32' ) {
+	my $win_anki_path = path('C:/Program Files/Anki/anki.exe');
+	$anki = "$win_anki_path";
+}
+
+if( which($anki) ) {
+	plan tests => 1;
+} else {
+	plan skip_all => 'Anki not found';
+}
 
 fun kill_anki() {
 	my $procs = killall('HUP', qr/\b[aA]nki\b/);
@@ -69,17 +87,6 @@ install_ankiconnect($base_dir);
 my $loop = IO::Async::Loop->new;
 my $http = Net::Async::HTTP->new;
 $loop->add( $http );
-
-my $anki;
-if( $^O eq 'linux' ) {
-	$anki = qw(anki);
-} elsif( $^O eq 'darwin' ) {
-	my $macos_anki_path = path('/Applications/Anki.app/Contents/MacOS/Anki');
-	$anki = "$macos_anki_path";
-} elsif( $^O eq 'MSWin32' ) {
-	my $win_anki_path = path('C:/Program Files/Anki/anki.exe');
-	$anki = "$win_anki_path";
-}
 
 # Start Anki
 my $function = IO::Async::Function->new(
