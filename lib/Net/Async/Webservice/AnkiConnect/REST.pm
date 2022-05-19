@@ -1,5 +1,5 @@
 use Renard::Incunabula::Common::Setup;
-package Renard::API::AnkiConnect::REST;
+package Net::Async::Webservice::AnkiConnect::REST;
 # ABSTRACT: REST API for AnkiConnect
 
 =for Pod::Coverage uri net_async_http api

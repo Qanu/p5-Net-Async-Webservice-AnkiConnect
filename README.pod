@@ -4,7 +4,7 @@
 
 =head1 NAME
 
-Renard::API::AnkiConnect - API for AnkiConnect service
+Net::Async::Webservice::AnkiConnect - API for AnkiConnect service
 
 =head1 VERSION
 
@@ -19,8 +19,6 @@ version 0.001
 =back
 
 =head1 SEE ALSO
-
-L<Repository information|http://project-renard.github.io/doc/development/repo/p5-Renard-API-AnkiConnect/>
 
 =head1 AUTHOR
 

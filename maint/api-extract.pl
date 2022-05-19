@@ -83,7 +83,7 @@ package AnkiConnect::API::Extract {
 		utf8::decode($pod);
 
 		substr($pod, 0, 0) = <<EOF;
-# PODNAME: Renard::API::AnkiConnect::REST
+# PODNAME: Net::Async::Webservice::AnkiConnect::REST
 
 1;
 
@@ -93,7 +93,7 @@ package AnkiConnect::API::Extract {
 
 EOF
 
-		my $output = $self->lib_path->child(qw(Renard API AnkiConnect REST.pod));
+		my $output = $self->lib_path->child(qw(Net Async Webservice AnkiConnect REST.pod));
 		$output->parent->mkpath;
 		$output->spew_utf8($pod);
 	}
