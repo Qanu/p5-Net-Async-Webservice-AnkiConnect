@@ -10,6 +10,8 @@ use Net::Async::HTTP;
 use Proc::Killall;
 use File::HomeDir;
 use File::Which qw(which);
+use Capture::Tiny qw(capture_stdout);
+use version 0.77;
 
 use lib 't/lib';
 
@@ -25,7 +27,15 @@ if( $^O eq 'linux' ) {
 }
 
 if( which($anki) ) {
-	plan tests => 1;
+	my ($anki_help) = capture_stdout { system($anki, '--help') };
+	my ($anki_version) = $anki_help =~ /Anki ([0-9.]+)/s;
+
+	my $ankiconnect_min_anki_version = version->parse('2.1.45');
+	if( version->parse($anki_version) < $ankiconnect_min_anki_version ) {
+		plan skip_all => "Minimum Anki version supported: $ankiconnect_min_anki_version";
+	} else {
+		plan tests => 1;
+	}
 } else {
 	plan skip_all => 'Anki not found';
 }
