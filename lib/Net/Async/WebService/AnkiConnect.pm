@@ -1,5 +1,5 @@
 use Renard::Incunabula::Common::Setup;
-package Net::Async::Webservice::AnkiConnect;
+package Net::Async::WebService::AnkiConnect;
 # ABSTRACT: API for AnkiConnect service
 
 use Mu;

@@ -3,7 +3,7 @@
 use Test::Most;
 
 use Renard::Incunabula::Common::Setup;
-use Net::Async::Webservice::AnkiConnect::REST;
+use Net::Async::WebService::AnkiConnect::REST;
 use IO::Async::Loop;
 use IO::Async::Function;
 use Net::Async::HTTP;
@@ -106,14 +106,14 @@ my $anki_func_future = $function->call( args => [] );
 sleep 6;
 
 subtest "Testing API creation" => fun() {
-	my $rest = Net::Async::Webservice::AnkiConnect::REST->new(
+	my $rest = Net::Async::WebService::AnkiConnect::REST->new(
 		net_async_http => $http,
 	);
 	can_ok $rest, qw(version sync);
 
 	my $future = $rest->version->on_done( sub {
 		my ($api_response) = @_;
-		is $api_response->{result}, Net::Async::Webservice::AnkiConnect::REST::API_VERSION, 'check that version matches';
+		is $api_response->{result}, Net::Async::WebService::AnkiConnect::REST::API_VERSION, 'check that version matches';
 	})->on_fail(sub {
 		fail 'could not get response';
 	})->followed_by(sub {

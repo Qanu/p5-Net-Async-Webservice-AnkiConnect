@@ -6,8 +6,8 @@ use Renard::Incunabula::Common::Setup;
 
 plan skip_all => "Only test on Linux" unless $^O eq 'linux';
 
-my $GET_API_FROM_PM=q{grep '^api' lib/Net/Async/Webservice/AnkiConnect/REST.pm | sed 's/ =>.*$//'};
-my $GET_API_FROM_POD=q{grep '=head2' lib/Net/Async/Webservice/AnkiConnect/REST.pod  | sed 's/=head2/api/g; s/C<//; s/>//;'};
+my $GET_API_FROM_PM=q{grep '^api' lib/Net/Async/WebService/AnkiConnect/REST.pm | sed 's/ =>.*$//'};
+my $GET_API_FROM_POD=q{grep '=head2' lib/Net/Async/WebService/AnkiConnect/REST.pod  | sed 's/=head2/api/g; s/C<//; s/>//;'};
 
 my $SORT_EXIT = system( "$GET_API_FROM_PM | sort -C" );
 ok 0 == $SORT_EXIT, "Checking if API is sorted in .pm";

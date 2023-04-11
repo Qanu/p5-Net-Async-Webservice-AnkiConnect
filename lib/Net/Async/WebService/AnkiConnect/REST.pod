@@ -1,4 +1,4 @@
-# PODNAME: Net::Async::Webservice::AnkiConnect::REST
+# PODNAME: Net::Async::WebService::AnkiConnect::REST
 
 1;
 
